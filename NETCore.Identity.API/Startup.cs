@@ -9,6 +9,7 @@ using Microsoft.OpenApi.Models;
 using NETCore.Identity.Core.Models;
 using NETCore.Identity.Data;
 using AutoMapper;
+using System;
 
 namespace NETCore.Identity.API
 {
@@ -35,8 +36,9 @@ namespace NETCore.Identity.API
                 options.Password.RequireNonAlphanumeric = true;
                 options.Password.RequireUppercase = true;
                 options.Password.RequireDigit = true;
-                //options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(1d);
-                //options.Lockout.MaxFailedAccessAttempts = 5;
+                options.SignIn.RequireConfirmedEmail = false;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(1d);
+                options.Lockout.MaxFailedAccessAttempts = 5;
             }).AddEntityFrameworkStores<IdentityDBContext>()
                 .AddDefaultTokenProviders(); ;
 
