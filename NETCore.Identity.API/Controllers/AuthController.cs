@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using NETCore.Identity.API.Resources;
+using NETCore.Identity.API.Settings;
 using NETCore.Identity.Core.Models;
 using System.Linq;
 using System.Threading.Tasks;
+using NETCore.Identity.Core.Services;
 
 namespace NETCore.Identity.API.Controllers
 {
@@ -16,14 +19,22 @@ namespace NETCore.Identity.API.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
         private readonly RoleManager<Role> _roleManager;
+        private readonly JwtSettings _jwtSettings;
+        private readonly IJwtService _jwtService;
+
+
         public AuthController(
             IMapper mapper,
             UserManager<User> userManager,
-            RoleManager<Role> roleManager)
+            RoleManager<Role> roleManager,
+            IOptionsSnapshot<JwtSettings> jwtSettings,
+            IJwtService jwtService)
         {
             _mapper = mapper;
             _userManager = userManager;
             _roleManager = roleManager;
+            _jwtSettings = jwtSettings.Value;
+            _jwtService = jwtService;
         }
 
 
@@ -60,11 +71,15 @@ namespace NETCore.Identity.API.Controllers
 
             if (userSigninResult)
             {
-                return Ok();
+               
+                    var roles = await _userManager.GetRolesAsync(user);
+                    return Ok(_jwtService.GenerateJwt(user, roles, _jwtSettings.Secret, _jwtSettings.Issuer, _jwtSettings.ExpirationInDays));
+                
             }
 
             return BadRequest("Email or password incorrect.");
         }
+    
 
         #region Roles
 

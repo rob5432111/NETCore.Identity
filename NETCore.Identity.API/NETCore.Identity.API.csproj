@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NETCore.Identity.Data\NETCore.Identity.Data.csproj" />
+    <ProjectReference Include="..\NETCore.Identity.Services\NETCore.Identity.Services.csproj" />
   </ItemGroup>
 
 

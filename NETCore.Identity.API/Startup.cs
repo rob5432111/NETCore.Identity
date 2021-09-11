@@ -10,6 +10,9 @@ using NETCore.Identity.Core.Models;
 using NETCore.Identity.Data;
 using AutoMapper;
 using System;
+using NETCore.Identity.API.Settings;
+using NETCore.Identity.Core.Services;
+using NETCore.Identity.Services;
 
 namespace NETCore.Identity.API
 {
@@ -25,6 +28,8 @@ namespace NETCore.Identity.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<JwtSettings>(Configuration.GetSection("Jwt"));
+
             services.AddControllers();
 
             services.AddDbContext<IdentityDBContext>(options =>
@@ -40,9 +45,12 @@ namespace NETCore.Identity.API
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(1d);
                 options.Lockout.MaxFailedAccessAttempts = 5;
             }).AddEntityFrameworkStores<IdentityDBContext>()
-                .AddDefaultTokenProviders(); ;
+                .AddDefaultTokenProviders();
+
 
             services.AddAutoMapper(typeof(Startup));
+
+            services.AddTransient<IJwtService, JwtService>();          
 
             services.AddSwaggerGen(c =>
             {
